@@ -63,8 +63,8 @@ scheduler = dict(
 
 # dataset settings
 dataset_type = "SAMPart3DDataset16Views"
-data_root = ""
-mesh_root = ""
+data_root = "data_root"
+mesh_root = "mesh_root"
 backbone_weight_path = ""
 
 # eval
