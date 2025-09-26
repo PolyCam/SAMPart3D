@@ -119,7 +119,7 @@ def highlight_parts_in_multi_views(render_dir, mesh_path, results_dir, save_dir,
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
-        print("Usage: python tools/highlight_parts.py <mesh_path> <render_dir> <results_dir>")
+        print("Usage: python highlight_parts.py <mesh_path> <render_dir> <results_dir>")
         sys.exit(1)
 
     mesh_path = sys.argv[1]
