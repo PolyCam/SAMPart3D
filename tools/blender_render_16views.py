@@ -252,12 +252,17 @@ def set_color_output(output_dir: Optional[str] = '', file_prefix: str = "render_
 
 
 def eevee_init():
-    bpy.context.scene.render.engine = 'BLENDER_EEVEE'
+    bpy.context.scene.render.engine = 'BLENDER_EEVEE_NEXT'
     bpy.context.scene.eevee.taa_render_samples = RENDER_SAMPLES
     if CLOSE_SHADOW == False:
-        bpy.context.scene.eevee.use_gtao = True
-        bpy.context.scene.eevee.use_ssr = True
-    bpy.context.scene.render.use_high_quality_normals = True
+        if hasattr(bpy.context.scene.eevee, 'use_gtao'):
+            bpy.context.scene.eevee.use_gtao = True
+        if hasattr(bpy.context.scene.eevee, 'use_ssr_reflections'):
+            bpy.context.scene.eevee.use_ssr_reflections = True
+        elif hasattr(bpy.context.scene.eevee, 'use_ssr'):
+            bpy.context.scene.eevee.use_ssr = True
+    if hasattr(bpy.context.scene.render, 'use_high_quality_normals'):
+        bpy.context.scene.render.use_high_quality_normals = True
 
 
 def clear_scene(NOT_CLEAR_LIGHT=False):
@@ -466,8 +471,13 @@ def process(filepath, types, output_path):
             bpy.ops.object.select_pattern(pattern=obj.name)
 
     for obj in mesh_objects:
-        obj.data.use_auto_smooth = True
-        obj.data.auto_smooth_angle = np.deg2rad(30)
+        bpy.context.view_layer.objects.active = obj
+        bpy.ops.object.shade_smooth()
+
+        # Add edge split modifier to handle sharp angles
+        edge_split = obj.modifiers.new(name="EdgeSplit", type='EDGE_SPLIT')
+        edge_split.split_angle = np.deg2rad(30)
+        edge_split.use_edge_angle = True
 
     for obj in bpy.data.objects:
         if obj.animation_data is not None:
